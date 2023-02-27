@@ -1,6 +1,7 @@
 use leptos::*;
 use leptos_meta::*;
 use leptos_router::*;
+use roll_rs::roller::roll_dice;
 
 #[component]
 pub fn App(cx: Scope) -> impl IntoView {
@@ -32,12 +33,13 @@ pub fn App(cx: Scope) -> impl IntoView {
 #[component]
 fn HomePage(cx: Scope) -> impl IntoView {
     // Creates a reactive value to update the button
-    let (count, set_count) = create_signal(cx, 0);
-    let on_click = move |_| set_count.update(|count| *count += 1);
+    let (roll, set_roll) = create_signal(cx, 0);
+
+    let on_roll_click = move |_| set_roll(roll_dice(1, 20, '_', 0).result_total);
 
     view! { cx,
-        <h1>"Welcome to Leptos!"</h1>
-        <div>{count}</div>
-        <button on:click=on_click>"Click Me"</button>
+        <h1>"Roll for Iniative!"</h1>
+        <div>{roll}</div>
+        <button on:click=on_roll_click>"Roll!"</button>
     }
 }
