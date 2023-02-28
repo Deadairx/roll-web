@@ -1,7 +1,7 @@
 use leptos::*;
 use leptos_meta::*;
 use leptos_router::*;
-use roll_rs::roller::roll_dice;
+use roll_rs::roller::{roll_dice, RollResult};
 
 #[component]
 pub fn App(cx: Scope) -> impl IntoView {
@@ -33,13 +33,29 @@ pub fn App(cx: Scope) -> impl IntoView {
 #[component]
 fn HomePage(cx: Scope) -> impl IntoView {
     // Creates a reactive value to update the button
-    let (roll, set_roll) = create_signal(cx, 0);
+    let (roll_total, set_roll_total) = create_signal(cx, 0);
+    let (all_dice, set_all_dice) = create_signal(cx, vec![]);
 
-    let on_roll_click = move |_| set_roll(roll_dice(1, 20, '_', 0).result_total);
+    let on_roll_click = move |_| {
+        let roll_result = roll_dice(2, 20, 'L', 0);
+
+        set_all_dice(roll_result.individual_rolls);
+        set_roll_total(roll_result.result_total);
+    };
 
     view! { cx,
         <h1>"Roll for Iniative!"</h1>
-        <div>{roll}</div>
+        <For
+            each=all_dice
+            key=|_dice| 1
+            view=move |cx, dice: u32| {
+                view! {
+                    cx,
+                    <span>{dice} "  "</span>
+                }
+            }
+        />
+        <div>{roll_total}</div>
         <button on:click=on_roll_click>"Roll!"</button>
     }
 }
